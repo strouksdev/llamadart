@@ -368,6 +368,14 @@ class ModelParams {
   /// (auto-enabled when [maxParallelSequences] > 1).
   final bool? kvUnified;
 
+  /// `llama_context_params.swa_full`. `null` keeps llama.cpp's default, a
+  /// full-size cache for sliding-window attention layers. `false` sizes
+  /// those layers' cache to the window, which shrinks the KV cache of
+  /// models such as Gemma 3 and Gemma 4 by an order of magnitude at long
+  /// contexts; a cached prompt prefix then can't be reused past the
+  /// window.
+  final bool? swaFull;
+
   /// `llama_context_params.rope_freq_base`. `null` keeps the model's
   /// trained value.
   final double? ropeFrequencyBase;
@@ -439,6 +447,7 @@ class ModelParams {
     this.cacheTypeK = KvCacheType.f16,
     this.cacheTypeV = KvCacheType.f16,
     this.kvUnified,
+    this.swaFull,
     this.ropeFrequencyBase,
     this.ropeFrequencyScale,
     this.preferMemory64,
@@ -578,8 +587,8 @@ class ModelParams {
 
   /// Creates a copy of this [ModelParams] with updated fields.
   ///
-  /// Nullable fields ([chatTemplate], [kvUnified], [ropeFrequencyBase],
-  /// [ropeFrequencyScale]) use a sentinel pattern so callers can
+  /// Nullable fields ([chatTemplate], [kvUnified], [swaFull],
+  /// [ropeFrequencyBase], [ropeFrequencyScale]) use a sentinel pattern so callers can
   /// **explicitly clear them back to null** by passing the corresponding
   /// `clear*: true` flag. Without the sentinel, `null` would be
   /// indistinguishable from "argument omitted, keep current value".
@@ -624,6 +633,8 @@ class ModelParams {
     KvCacheType? cacheTypeV,
     bool? kvUnified,
     bool clearKvUnified = false,
+    bool? swaFull,
+    bool clearSwaFull = false,
     double? ropeFrequencyBase,
     bool clearRopeFrequencyBase = false,
     double? ropeFrequencyScale,
@@ -679,6 +690,7 @@ class ModelParams {
       cacheTypeK: cacheTypeK ?? this.cacheTypeK,
       cacheTypeV: cacheTypeV ?? this.cacheTypeV,
       kvUnified: clearKvUnified ? null : (kvUnified ?? this.kvUnified),
+      swaFull: clearSwaFull ? null : (swaFull ?? this.swaFull),
       ropeFrequencyBase: clearRopeFrequencyBase
           ? null
           : (ropeFrequencyBase ?? this.ropeFrequencyBase),

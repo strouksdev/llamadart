@@ -37,6 +37,7 @@ void main() {
     expect(params.cacheTypeK, KvCacheType.f16);
     expect(params.cacheTypeV, KvCacheType.f16);
     expect(params.kvUnified, isNull);
+    expect(params.swaFull, isNull);
     expect(params.ropeFrequencyBase, isNull);
     expect(params.ropeFrequencyScale, isNull);
     expect(ModelParams.maxGpuLayers, 999);
@@ -540,6 +541,7 @@ void main() {
       liteRtLmParallelFileSectionLoading: false,
       liteRtLmDispatchLibDir: '/opt/litert',
       kvUnified: true,
+      swaFull: false,
       ropeFrequencyBase: 1000000.0,
       ropeFrequencyScale: 0.5,
     );
@@ -615,6 +617,14 @@ void main() {
       final cleared = populated.copyWith(clearKvUnified: true);
       expect(cleared.kvUnified, isNull);
       expect(cleared.chatTemplate, 'custom-template');
+    });
+
+    test('swaFull is copied, and clearSwaFull: true sets it to null', () {
+      expect(populated.copyWith().swaFull, isFalse);
+      expect(populated.copyWith(swaFull: true).swaFull, isTrue);
+      final cleared = populated.copyWith(clearSwaFull: true);
+      expect(cleared.swaFull, isNull);
+      expect(cleared.kvUnified, isTrue);
     });
 
     test('clearRopeFrequencyBase: true sets ropeFrequencyBase to null', () {

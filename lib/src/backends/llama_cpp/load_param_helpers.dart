@@ -121,6 +121,9 @@ FlashAttention applyContextParams(
   if (params.kvUnified != null) {
     ctxParams.kv_unified = params.kvUnified!;
   }
+  if (params.swaFull != null) {
+    ctxParams.swa_full = params.swaFull!;
+  }
   if (params.ropeFrequencyBase != null) {
     ctxParams.rope_freq_base = params.ropeFrequencyBase!;
   }

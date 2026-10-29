@@ -1167,6 +1167,9 @@ class LiteRtLmBackend
     if (params.kvUnified != null) {
       unsupported.add('kvUnified');
     }
+    if (params.swaFull != null) {
+      unsupported.add('swaFull');
+    }
     if (params.ropeFrequencyBase != null) {
       unsupported.add('ropeFrequencyBase');
     }

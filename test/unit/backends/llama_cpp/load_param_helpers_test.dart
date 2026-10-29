@@ -350,6 +350,28 @@ void main() {
       }
     });
 
+    test('null swaFull leaves struct field unchanged', () {
+      final c = calloc<llama_context_params>();
+      try {
+        c.ref.swa_full = true;
+        applyContextParams(c.ref, ModelParams());
+        expect(c.ref.swa_full, isTrue);
+      } finally {
+        calloc.free(c);
+      }
+    });
+
+    test('non-null swaFull writes the value', () {
+      final c = calloc<llama_context_params>();
+      try {
+        c.ref.swa_full = true;
+        applyContextParams(c.ref, ModelParams(swaFull: false));
+        expect(c.ref.swa_full, isFalse);
+      } finally {
+        calloc.free(c);
+      }
+    });
+
     test('null ropeFrequencyBase / Scale leaves struct fields unchanged', () {
       final c = calloc<llama_context_params>();
       try {
