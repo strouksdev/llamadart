@@ -483,6 +483,14 @@ class ModelParams {
   /// (auto-enabled when [maxParallelSequences] > 1).
   final bool? kvUnified;
 
+  /// `llama_context_params.swa_full`. `null` keeps llama.cpp's default, a
+  /// full-size cache for sliding-window attention layers. `false` sizes
+  /// those layers' cache to the window, which shrinks the KV cache of
+  /// models such as Gemma 3 and Gemma 4 by an order of magnitude at long
+  /// contexts; a cached prompt prefix then can't be reused past the
+  /// window.
+  final bool? swaFull;
+
   /// `llama_context_params.rope_freq_base`. `null` keeps the model's
   /// trained value.
   final double? ropeFrequencyBase;
@@ -633,6 +641,7 @@ class ModelParams {
     this.cacheTypeK = KvCacheType.f16,
     this.cacheTypeV = KvCacheType.f16,
     this.kvUnified,
+    this.swaFull,
     this.ropeFrequencyBase,
     this.ropeFrequencyScale,
     this.cpuMoeLayers = 0,
@@ -674,6 +683,7 @@ class ModelParams {
       cacheTypeK = other.cacheTypeK,
       cacheTypeV = other.cacheTypeV,
       kvUnified = other.kvUnified,
+      swaFull = other.swaFull,
       ropeFrequencyBase = other.ropeFrequencyBase,
       ropeFrequencyScale = other.ropeFrequencyScale,
       cpuMoeLayers = other.cpuMoeLayers,
@@ -927,8 +937,8 @@ class ModelParams {
   /// Creates a copy of this [ModelParams] with updated fields.
   ///
   /// Nullable fields ([gpuDevices], [tensorSplit], [chatTemplate],
-  /// [kvUnified], [ropeFrequencyBase], [ropeFrequencyScale]) use a sentinel
-  /// pattern so callers can
+  /// [kvUnified], [swaFull], [ropeFrequencyBase], [ropeFrequencyScale]) use
+  /// a sentinel pattern so callers can
   /// **explicitly clear them back to null** by passing the corresponding
   /// `clear*: true` flag. Without the sentinel, `null` would be
   /// indistinguishable from "argument omitted, keep current value".
@@ -1030,6 +1040,8 @@ class ModelParams {
     KvCacheType? cacheTypeV,
     bool? kvUnified,
     bool clearKvUnified = false,
+    bool? swaFull,
+    bool clearSwaFull = false,
     double? ropeFrequencyBase,
     bool clearRopeFrequencyBase = false,
     double? ropeFrequencyScale,
@@ -1091,6 +1103,7 @@ class ModelParams {
       cacheTypeK: cacheTypeK ?? this.cacheTypeK,
       cacheTypeV: cacheTypeV ?? this.cacheTypeV,
       kvUnified: clearKvUnified ? null : (kvUnified ?? this.kvUnified),
+      swaFull: clearSwaFull ? null : (swaFull ?? this.swaFull),
       ropeFrequencyBase: clearRopeFrequencyBase
           ? null
           : (ropeFrequencyBase ?? this.ropeFrequencyBase),
@@ -1151,6 +1164,7 @@ class LlamaCppModelParams extends ModelParams {
     super.cacheTypeK,
     super.cacheTypeV,
     super.kvUnified,
+    super.swaFull,
     super.ropeFrequencyBase,
     super.ropeFrequencyScale,
     super.cpuMoeLayers,
@@ -1266,6 +1280,8 @@ class LlamaCppModelParams extends ModelParams {
     KvCacheType? cacheTypeV,
     bool? kvUnified,
     bool clearKvUnified = false,
+    bool? swaFull,
+    bool clearSwaFull = false,
     double? ropeFrequencyBase,
     bool clearRopeFrequencyBase = false,
     double? ropeFrequencyScale,
@@ -1325,6 +1341,8 @@ class LlamaCppModelParams extends ModelParams {
         cacheTypeV: cacheTypeV,
         kvUnified: kvUnified,
         clearKvUnified: clearKvUnified,
+        swaFull: swaFull,
+        clearSwaFull: clearSwaFull,
         ropeFrequencyBase: ropeFrequencyBase,
         clearRopeFrequencyBase: clearRopeFrequencyBase,
         ropeFrequencyScale: ropeFrequencyScale,
@@ -1538,6 +1556,8 @@ class LiteRtLmModelParams extends ModelParams {
     KvCacheType? cacheTypeV,
     bool? kvUnified,
     bool clearKvUnified = false,
+    bool? swaFull,
+    bool clearSwaFull = false,
     double? ropeFrequencyBase,
     bool clearRopeFrequencyBase = false,
     double? ropeFrequencyScale,
@@ -1566,6 +1586,7 @@ class LiteRtLmModelParams extends ModelParams {
       'cacheTypeK': cacheTypeK,
       'cacheTypeV': cacheTypeV,
       'kvUnified': kvUnified,
+      'swaFull': swaFull,
       'ropeFrequencyBase': ropeFrequencyBase,
       'ropeFrequencyScale': ropeFrequencyScale,
       'cpuMoeLayers': cpuMoeLayers,
@@ -1575,6 +1596,7 @@ class LiteRtLmModelParams extends ModelParams {
       if (clearGpuDevices) 'clearGpuDevices': true,
       if (clearTensorSplit) 'clearTensorSplit': true,
       if (clearKvUnified) 'clearKvUnified': true,
+      if (clearSwaFull) 'clearSwaFull': true,
       if (clearRopeFrequencyBase) 'clearRopeFrequencyBase': true,
       if (clearRopeFrequencyScale) 'clearRopeFrequencyScale': true,
       if (clearPreferMemory64) 'clearPreferMemory64': true,

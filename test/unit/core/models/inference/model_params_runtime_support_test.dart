@@ -38,6 +38,7 @@ void main() {
     cacheTypeK: KvCacheType.q8_0,
     cacheTypeV: KvCacheType.q8_0,
     kvUnified: true,
+    swaFull: false,
     ropeFrequencyBase: 10000,
     ropeFrequencyScale: 1,
     cpuMoeLayers: -1,
@@ -88,8 +89,8 @@ void main() {
   });
 
   group('llama.cpp on the Web', () {
-    test('rejects liteRtLm* fields, memory mapping and MoE expert '
-        'options', () {
+    test('rejects liteRtLm* fields, memory mapping, the SWA cache size and '
+        'MoE expert options', () {
       expect(
         unsupported(liteRtLmFields, LlamaRuntime.llamaCpp, web: true),
         liteRtLmFieldNames,
@@ -99,6 +100,7 @@ void main() {
         'tensorSplit',
         'useMmap=false',
         'useMlock',
+        'swaFull',
         'cpuMoeLayers',
         'moeCacheBytes',
       ]);
@@ -152,6 +154,7 @@ void main() {
         'cacheTypeK',
         'cacheTypeV',
         'kvUnified',
+        'swaFull',
         'ropeFrequencyBase',
         'ropeFrequencyScale',
         'cpuMoeLayers',

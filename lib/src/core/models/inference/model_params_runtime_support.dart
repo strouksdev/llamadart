@@ -21,6 +21,7 @@ List<String> modelParamsUnsupportedBy(
       ..._gpuDeviceFields(params),
       if (!params.useMmap) 'useMmap=false',
       if (params.useMlock) 'useMlock',
+      if (params.swaFull != null) 'swaFull',
       ..._moeExpertFields(params),
     ] else ...[
       if (params.preferMemory64 != null) 'preferMemory64',
@@ -51,6 +52,7 @@ List<String> modelParamsUnsupportedBy(
     if (params.cacheTypeK != KvCacheType.f16) 'cacheTypeK',
     if (params.cacheTypeV != KvCacheType.f16) 'cacheTypeV',
     if (params.kvUnified != null) 'kvUnified',
+    if (params.swaFull != null) 'swaFull',
     if (params.ropeFrequencyBase != null) 'ropeFrequencyBase',
     if (params.ropeFrequencyScale != null) 'ropeFrequencyScale',
     ..._moeExpertFields(params),

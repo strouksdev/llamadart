@@ -59,6 +59,7 @@ void main() {
     expect(params.cacheTypeK, KvCacheType.f16);
     expect(params.cacheTypeV, KvCacheType.f16);
     expect(params.kvUnified, isNull);
+    expect(params.swaFull, isNull);
     expect(params.ropeFrequencyBase, isNull);
     expect(params.ropeFrequencyScale, isNull);
     expect(ModelParams.maxGpuLayers, 999);
@@ -782,6 +783,7 @@ void main() {
       liteRtLmParallelFileSectionLoading: false,
       liteRtLmDispatchLibDir: '/opt/litert',
       kvUnified: true,
+      swaFull: false,
       ropeFrequencyBase: 1000000.0,
       ropeFrequencyScale: 0.5,
     );
@@ -857,6 +859,13 @@ void main() {
       final cleared = populated.copyWith(clearKvUnified: true);
       expect(cleared.kvUnified, isNull);
       expect(cleared.chatTemplate, 'custom-template');
+    });
+
+    test('clearSwaFull: true sets swaFull to null', () {
+      expect(populated.copyWith().swaFull, isFalse);
+      final cleared = populated.copyWith(clearSwaFull: true);
+      expect(cleared.swaFull, isNull);
+      expect(cleared.kvUnified, isTrue);
     });
 
     test('clearRopeFrequencyBase: true sets ropeFrequencyBase to null', () {
@@ -949,14 +958,20 @@ void main() {
 
     test('copyWith keeps the subtype, also through a ModelParams type', () {
       const ModelParams llamaCpp = LlamaCppModelParams(batchSize: 256);
-      final copied = llamaCpp.copyWith(contextSize: 1024, kvUnified: true);
+      final copied = llamaCpp.copyWith(
+        contextSize: 1024,
+        kvUnified: true,
+        swaFull: false,
+      );
       expect(copied, isA<LlamaCppModelParams>());
       expect(copied.contextSize, 1024);
       expect(copied.batchSize, 256);
       expect(copied.kvUnified, isTrue);
+      expect(copied.swaFull, isFalse);
       final LlamaCppModelParams cleared = (copied as LlamaCppModelParams)
-          .copyWith(clearKvUnified: true);
+          .copyWith(clearKvUnified: true, clearSwaFull: true);
       expect(cleared.kvUnified, isNull);
+      expect(cleared.swaFull, isNull);
 
       const ModelParams liteRtLm = LiteRtLmModelParams(cacheDir: '/cache');
       final copiedLiteRtLm = liteRtLm.copyWith(contextSize: 1024);
@@ -1084,6 +1099,7 @@ void main() {
       'cacheTypeK': p.cacheTypeK,
       'cacheTypeV': p.cacheTypeV,
       'kvUnified': p.kvUnified,
+      'swaFull': p.swaFull,
       'ropeFrequencyBase': p.ropeFrequencyBase,
       'ropeFrequencyScale': p.ropeFrequencyScale,
       'cpuMoeLayers': p.cpuMoeLayers,
@@ -1116,6 +1132,7 @@ void main() {
       cacheTypeK: KvCacheType.q8_0,
       cacheTypeV: KvCacheType.q4_0,
       kvUnified: true,
+      swaFull: false,
       ropeFrequencyBase: 10000,
       ropeFrequencyScale: 0.5,
       cpuMoeLayers: -1,
@@ -1181,6 +1198,7 @@ void main() {
         cacheTypeK: KvCacheType.f16,
         cacheTypeV: KvCacheType.f16,
         kvUnified: false,
+        swaFull: true,
         ropeFrequencyBase: 20000,
         ropeFrequencyScale: 0.25,
         cpuMoeLayers: 4,
@@ -1206,6 +1224,7 @@ void main() {
         'speculativeRollbackTokenMax': 8,
         'flashAttention': FlashAttention.disabled,
         'kvUnified': false,
+        'swaFull': true,
         'ropeFrequencyBase': 20000.0,
         'ropeFrequencyScale': 0.25,
         'cpuMoeLayers': 4,
@@ -1270,6 +1289,8 @@ void main() {
         #cacheTypeV: KvCacheType.f16,
         #kvUnified: true,
         #clearKvUnified: true,
+        #swaFull: true,
+        #clearSwaFull: true,
         #ropeFrequencyBase: 1.0,
         #clearRopeFrequencyBase: true,
         #ropeFrequencyScale: 1.0,
